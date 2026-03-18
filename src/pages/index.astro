@@ -1,0 +1,42 @@
+---
+import { client } from "../sanityClient";
+
+const lectures = await client.fetch(`*[_type == "lecture"]{
+  title,
+  summary,
+  language,
+  "pdfUrl": pdfFile.asset->url
+}`);
+---
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Academic Library</title>
+    <style>
+      body { font-family: sans-serif; background: #f4f7f6; padding: 20px; }
+      .container { max-width: 800px; margin: auto; }
+      .lecture-card { background: white; padding: 20px; border-radius: 12px; margin-bottom: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+      .ar { direction: rtl; text-align: right; border-right: 8px solid #2c3e50; }
+      .en { direction: ltr; text-align: left; border-left: 8px solid #3498db; }
+      .download-btn { display: inline-block; background: #2c3e50; color: white; padding: 10px 20px; border-radius: 5px; text-decoration: none; margin-top: 10px; }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>Lectures Library | مكتبة المحاضرات</h1>
+      
+      {lectures.map((lecture: any) => (
+        <div class={`lecture-card ${lecture.language}`}>
+          <h2>{lecture.title}</h2>
+          <p>{lecture.summary}</p>
+          {lecture.pdfUrl && (
+            <a href={lecture.pdfUrl} target="_blank" class="download-btn">
+              {lecture.language === 'ar' ? 'تحميل PDF' : 'Download PDF'}
+            </a>
+          )}
+        </div>
+      ))}
+    </div>
+  </body>
+</html>
