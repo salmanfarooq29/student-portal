@@ -1,10 +1,10 @@
 ---
 import { sanityClient } from '../sanityClient';
 
-// This asks Sanity for the Title and the secret URL of the PDF file
+// Updated to use "pdfFile" which matches your Sanity setup
 const lectures = await sanityClient.fetch(`*[_type == "lecture"]{
   title,
-  "fileURL": lecture.asset->url
+  "fileURL": pdfFile.asset->url
 }`);
 
 const title = "Student Lecture Library";
@@ -24,12 +24,8 @@ const title = "Student Lecture Library";
 				📚 {title}
 			</h1>
 
-			<p style="color: #666; margin-bottom: 30px;">
-				Welcome! Below is the list of available lectures. Click the link to download the PDF.
-			</p>
-
 			{lectures.length > 0 ? (
-				<ul style="list-style: none; padding: 0;">
+				<ul style="list-style: none; padding: 0; margin-top: 20px;">
 					{lectures.map((lecture) => (
 						<li style="background: #f9f9f9; border: 1px solid #ddd; border-radius: 8px; margin-bottom: 15px; padding: 15px; display: flex; justify-content: space-between; align-items: center;">
 							<span style="font-weight: bold; color: #444;">{lecture.title}</span>
@@ -38,19 +34,20 @@ const title = "Student Lecture Library";
 								<a 
 									href={`${lecture.fileURL}?dl=`} 
 									target="_blank" 
-									style="background: #0070f3; color: white; padding: 8px 16px; border-radius: 5px; text-decoration: none; font-size: 14px;"
+									style="background: #0070f3; color: white; padding: 8px 16px; border-radius: 5px; text-decoration: none; font-size: 14px; font-weight: bold;"
 								>
 									Download PDF
 								</a>
 							) : (
-								<span style="color: #999; font-size: 12px;">No file attached</span>
+								<span style="color: #999; font-size: 12px;">No PDF uploaded</span>
 							)}
 						</li>
 					))}
 				</ul>
 			) : (
-				<div style="text-align: center; padding: 40px; background: #fff8f8; border: 1px dashed #ffcccc; border-radius: 8px;">
-					<p style="color: #cc0000;">No lectures found. Make sure you have "Published" them in Sanity!</p>
+				<div style="text-align: center; padding: 40px; background: #fff8f8; border: 1px dashed #ffcccc; border-radius: 8px; margin-top: 20px;">
+					<p style="color: #cc0000; font-weight: bold;">No lectures found.</p>
+					<p style="color: #666; font-size: 14px;">Make sure you have added lectures in Sanity and clicked "Publish"!</p>
 				</div>
 			)}
 		</main>
