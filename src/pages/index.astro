@@ -1,7 +1,6 @@
 ---
 import { sanityClient } from '../sanityClient';
 
-// Define the fetch logic
 const data = await sanityClient.fetch(`{
   "lectures": *[_type == "lecture"] | order(_createdAt desc) {
     title,
@@ -47,33 +46,35 @@ const siteTitle = "Lectures Library";
 				{articles && articles.length > 0 ? (
 					<div style="display: grid; gap: 24px;">
 						{articles.map((post: any) => (
-							<article style="background: white; border: 1px solid #e2e8f0; border-radius: 16px; padding: 32px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);">
+							<article style="background: white; border: 1px solid #e2e8f0; border-radius: 16px; padding: 32px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); unicode-bidi: plaintext;">
 								<small style="color: #64748b; font-weight: 600;">
-									{post.date ? new Date(post.date).toLocaleDateString() : "General"}
+									{post.date ? new Date(post.date).toLocaleDateString() : "General Update"}
 								</small>
-								<h3 style="font-size: 1.6rem; margin: 12px 0; color: #1e3a8a;">{post.title}</h3>
-								<p style="color: #475569; margin-bottom: 24px;">
+								<h3 style="font-size: 1.65rem; margin: 12px 0; color: #1e3a8a;">{post.title}</h3>
+								<p style="color: #475569; margin-bottom: 24px; font-size: 1.05rem;">
 									{post.content ? post.content.substring(0, 180) : "No content available"}...
 								</p>
-								<a href={`/articles/${post.title}`} style="display: inline-block; background: #2563eb; color: white; padding: 12px 24px; border-radius: 10px; text-decoration: none; font-weight: 600;">
+								<a href={`/articles/${post.title}`} style="display: inline-block; background: #2563eb; color: white; padding: 12px 24px; border-radius: 10px; text-decoration: none; font-weight: 600; transition: background 0.2s;">
 									Continue Reading →
 								</a>
 							</article>
 						))}
 					</div>
 				) : (
-					<p>No articles found.</p>
+					<div style="background: #f1f5f9; padding: 40px; border-radius: 16px; text-align: center;">
+						<p style="color: #64748b;">No articles found in the library yet.</p>
+					</div>
 				)}
 			</section>
 
 			<aside style="background: white; border: 1px solid #e2e8f0; border-radius: 16px; padding: 24px; position: sticky; top: 20px;">
-				<h2 style="font-size: 1.25rem; margin-bottom: 20px;">📄 Resources</h2>
+				<h2 style="font-size: 1.25rem; margin-bottom: 20px; color: #0f172a;">📄 Resources</h2>
 				
 				{lectures && lectures.length > 0 ? (
 					<div style="display: grid; gap: 12px;">
 						{lectures.map((lecture: any) => (
 							<div style="padding: 16px; border-radius: 10px; background: #f8fafc; border: 1px solid #f1f5f9;">
-								<p style="margin: 0 0 12px 0; font-weight: 600; font-size: 0.95rem;">{lecture.title}</p>
+								<p style="margin: 0 0 12px 0; font-weight: 600; font-size: 0.95rem; color: #334155;">{lecture.title}</p>
 								{lecture.fileURL && (
 									<a href={`${lecture.fileURL}?dl=`} target="_blank" style="display: block; text-align: center; border: 1px solid #059669; color: #059669; padding: 8px; border-radius: 8px; text-decoration: none; font-size: 0.85rem; font-weight: 700;">
 										Download PDF
@@ -83,13 +84,14 @@ const siteTitle = "Lectures Library";
 						))}
 					</div>
 				) : (
-					<p>No materials available.</p>
+					<p style="color: #94a3b8; text-align: center;">No materials listed.</p>
 				)}
 			</aside>
 		</main>
 
-		<footer style="margin-top: 100px; padding: 40px; background: #0f172a; color: white; text-align: center;">
-			<p>&copy; {new Date().getFullYear()} {siteTitle}</p>
+		<footer style="margin-top: 100px; padding: 60px 20px; background: #0f172a; color: #94a3b8; text-align: center;">
+			<p style="margin: 0; font-weight: 600; color: white;">{siteTitle}</p>
+			<p style="margin-top: 8px; font-size: 0.9rem;">&copy; {new Date().getFullYear()} — Built for Education</p>
 		</footer>
 
 	</body>
