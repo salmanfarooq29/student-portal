@@ -1,0 +1,62 @@
+---
+import { createClient } from "@sanity/client";
+
+// 1. Direct Client Setup (No external file needed)
+const sanityClient = createClient({
+  projectId: "zwvw0ekg", // Your Project ID
+  dataset: "production",
+  useCdn: true,
+  apiVersion: "2024-03-18",
+});
+
+// 2. Tell Astro which pages to build
+export async function getStaticPaths() {
+  const sanityClient = createClient({
+    projectId: "zwvw0ekg",
+    dataset: "production",
+    useCdn: true,
+    apiVersion: "2024-03-18",
+  });
+  
+  const articles = await sanityClient.fetch(`*[_type == "article"]{ "params": { "slug": title } }`);
+  return articles;
+}
+
+// 3. Fetch the specific article content
+const { slug } = Astro.params;
+const article = await sanityClient.fetch(`*[_type == "article" && title == $slug][0]`, { slug });
+---
+
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<title>{article?.title || "Article"}</title>
+	</head>
+	<body style="max-width: 700px; margin: 0 auto; font-family: sans-serif; padding: 40px 20px; line-height: 1.8; color: #333; background: #f9f9f9;">
+		<a href="/" style="color: #1a73e8; text-decoration: none; font-weight: bold; display: inline-block; margin-bottom: 20px;">← Back to Library</a>
+		
+		{article ? (
+			<article style="background: white; padding: 40px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05);">
+				<header style="border-bottom: 2px solid #eee; padding-bottom: 20px; margin-bottom: 30px;">
+					<h1 style="font-size: 2.5rem; margin: 0 0 10px 0; color: #1a73e8;">{article.title}</h1>
+					<p style="color: #888; margin: 0;">
+						Published on {article.date ? new Date(article.date).toLocaleDateString() : "Recently"}
+					</p>
+				</header>
+
+				<main style="font-size: 1.15rem; white-space: pre-line; color: #444;">
+					{article.content}
+				</main>
+			</article>
+		) : (
+			<div style="text-align: center; padding: 50px;">
+				<h2>Article not found</h2>
+				<p>It looks like this article doesn't exist anymore.</p>
+			</div>
+		)}
+
+		<footer style="text-align: center; margin-top: 50px; color: #aaa; font-size: 0.9rem;">
+			<p>Student Lecture Library &copy; {new Date().getFullYear()}</p>
+		</footer>
+	</body>
+</html>
