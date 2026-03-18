@@ -1,42 +1,58 @@
 ---
-import { client } from "../sanityClient";
+import { sanityClient } from '../sanityClient';
 
-const lectures = await client.fetch(`*[_type == "lecture"]{
+// This asks Sanity for the Title and the secret URL of the PDF file
+const lectures = await sanityClient.fetch(`*[_type == "lecture"]{
   title,
-  summary,
-  language,
-  "pdfUrl": pdfFile.asset->url
+  "fileURL": lecture.asset->url
 }`);
+
+const title = "Student Lecture Library";
 ---
 
 <html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <title>Academic Library</title>
-    <style>
-      body { font-family: sans-serif; background: #f4f7f6; padding: 20px; }
-      .container { max-width: 800px; margin: auto; }
-      .lecture-card { background: white; padding: 20px; border-radius: 12px; margin-bottom: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
-      .ar { direction: rtl; text-align: right; border-right: 8px solid #2c3e50; }
-      .en { direction: ltr; text-align: left; border-left: 8px solid #3498db; }
-      .download-btn { display: inline-block; background: #2c3e50; color: white; padding: 10px 20px; border-radius: 5px; text-decoration: none; margin-top: 10px; }
-    </style>
-  </head>
-  <body>
-    <div class="container">
-      <h1>Lectures Library | مكتبة المحاضرات</h1>
-      
-      {lectures.map((lecture: any) => (
-        <div class={`lecture-card ${lecture.language}`}>
-          <h2>{lecture.title}</h2>
-          <p>{lecture.summary}</p>
-          {lecture.pdfUrl && (
-            <a href={lecture.pdfUrl} target="_blank" class="download-btn">
-              {lecture.language === 'ar' ? 'تحميل PDF' : 'Download PDF'}
-            </a>
-          )}
-        </div>
-      ))}
-    </div>
-  </body>
+	<head>
+		<meta charset="utf-8" />
+		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+		<meta name="viewport" content="width=device-width" />
+		<meta name="generator" content={Astro.generator} />
+		<title>{title}</title>
+	</head>
+	<body>
+		<main style="max-width: 800px; margin: 40px auto; font-family: sans-serif; padding: 0 20px;">
+			<h1 style="color: #333; border-bottom: 2px solid #eee; padding-bottom: 10px;">
+				📚 {title}
+			</h1>
+
+			<p style="color: #666; margin-bottom: 30px;">
+				Welcome! Below is the list of available lectures. Click the link to download the PDF.
+			</p>
+
+			{lectures.length > 0 ? (
+				<ul style="list-style: none; padding: 0;">
+					{lectures.map((lecture) => (
+						<li style="background: #f9f9f9; border: 1px solid #ddd; border-radius: 8px; margin-bottom: 15px; padding: 15px; display: flex; justify-content: space-between; align-items: center;">
+							<span style="font-weight: bold; color: #444;">{lecture.title}</span>
+							
+							{lecture.fileURL ? (
+								<a 
+									href={`${lecture.fileURL}?dl=`} 
+									target="_blank" 
+									style="background: #0070f3; color: white; padding: 8px 16px; border-radius: 5px; text-decoration: none; font-size: 14px;"
+								>
+									Download PDF
+								</a>
+							) : (
+								<span style="color: #999; font-size: 12px;">No file attached</span>
+							)}
+						</li>
+					))}
+				</ul>
+			) : (
+				<div style="text-align: center; padding: 40px; background: #fff8f8; border: 1px dashed #ffcccc; border-radius: 8px;">
+					<p style="color: #cc0000;">No lectures found. Make sure you have "Published" them in Sanity!</p>
+				</div>
+			)}
+		</main>
+	</body>
 </html>
